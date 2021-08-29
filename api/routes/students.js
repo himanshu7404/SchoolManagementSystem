@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import Student from '../../models/students.js';
+import Attendance from '../../models/attendance.js';
 import mongoose from 'mongoose';
 
 const storage = multer.diskStorage({
@@ -96,6 +97,80 @@ router.post('/',upload.single('studentImage'),(req,res,next) => {
         addedStudent: student
     });
 });
+
+router.patch("/:studentId", (req, res, next) => {
+    const id = req.params.studentId;
+    const updateOps = {};
+    for (const ops of req.body) {
+      updateOps[ops.propName] = ops.value;
+    }
+    Student.updateOne({ _id: id }, { $set: updateOps })
+      .exec()
+      .then(result => {
+        res.status(200).json({
+            message: 'Student Information updated',
+            updatedEntries: updateOps,
+            request: {
+                type: 'GET',
+                url: 'http://localhost:3000/students/' + id
+            }
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).json({
+          error: err
+        });
+      });
+  });
+
+  router.delete("/:studentId", (req, res, next) => {
+    const id = req.params.studentId;
+    Student.deleteOne({ _id: id })
+      .exec()
+      .then(result => {
+        res.status(200).json({
+            message: 'Student deleted',
+            request: {
+                type: 'POST',
+                url: 'http://localhost:3000/students'
+            }
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).json({
+          error: err
+        });
+      });
+  });
+
+/* Attendance Api */
+
+router.post("/:attendance/:studentID", (req,res,next) => {
+    const id = req.params.studentID;
+    const status = req.params.attendance;
+    const attendance = new Attendance({
+        _id:  new mongoose.Types.ObjectId(),
+        uniqueID: id,
+        status: status,
+        date: new Date()
+        
+
+    });
+    attendance.save();
+    res.status(201).json({
+        message: 'attendance entered',
+        added: attendance
+    });
+})
+
+
+
+
+
+
+
 
 
 export default router;

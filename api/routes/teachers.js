@@ -2,7 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import Teacher from '../../models/teachers.js';
 import mongoose from 'mongoose';
-
+import Attendance from '../../models/attendance.js'
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, './uploads/');
@@ -94,6 +94,71 @@ router.post('/',upload.single('teacherImage'),(req,res,next) => {
         addedStudent: teacher
     });
 });
+
+router.patch("/:teacherId", (req, res, next) => {
+    const id = req.params.teacherId;
+    const updateOps = {};
+    for (const ops of req.body) {
+      updateOps[ops.propName] = ops.value;
+    }
+    Teacher.updateOne({ _id: id }, { $set: updateOps })
+      .exec()
+      .then(result => {
+        res.status(200).json({
+            message: 'Student Information updated',
+            updatedEntries: updateOps,
+            request: {
+                type: 'GET',
+                url: 'http://localhost:3000/teachers/' + id
+            }
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).json({
+          error: err
+        });
+      });
+  });
+
+  router.delete("/:teacherId", (req, res, next) => {
+    const id = req.params.teacherId;
+    Teacher.deleteOne({ _id: id })
+      .exec()
+      .then(result => {
+        res.status(200).json({
+            message: 'Teacher deleted',
+            request: {
+                type: 'POST',
+                url: 'http://localhost:3000/teachers'
+            }
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).json({
+          error: err
+        });
+      });
+  });
+
+  router.post("/:attendance/:teacherID", (req,res,next) => {
+    const id = req.params.teacherID;
+    const status = req.params.attendance;
+    const attendance = new Attendance({
+        _id:  new mongoose.Types.ObjectId(),
+        uniqueID: id,
+        status: status,
+        date: new Date()
+        
+
+    });
+    attendance.save();
+    res.status(201).json({
+        message: 'attendance entered',
+        added: attendance
+    });
+})
 
 
 export default router;
