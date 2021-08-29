@@ -1,6 +1,8 @@
 import express from 'express';
 import teachersRoutes from './api/routes/teachers.js';
 import studentsRoutes from './api/routes/students.js';
+import attendanceRoutes from './api/routes/attendance.js';
+import marksRoutes from './api/routes/marks.js';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 
@@ -28,6 +30,8 @@ app.use((req,res,next) => {
 
 app.use('/teachers',teachersRoutes);
 app.use('/students',studentsRoutes);
+app.use('/attendance', attendanceRoutes);
+app.use('/marks',marksRoutes);
 
 
 app.use((req, res, next) =>{

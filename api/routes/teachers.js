@@ -2,7 +2,6 @@ import express from 'express';
 import multer from 'multer';
 import Teacher from '../../models/teachers.js';
 import mongoose from 'mongoose';
-import Attendance from '../../models/attendance.js'
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, './uploads/');
@@ -95,6 +94,8 @@ router.post('/',upload.single('teacherImage'),(req,res,next) => {
     });
 });
 
+/*body needs to be passes as an array */
+
 router.patch("/:teacherId", (req, res, next) => {
     const id = req.params.teacherId;
     const updateOps = {};
@@ -142,23 +143,16 @@ router.patch("/:teacherId", (req, res, next) => {
       });
   });
 
-  router.post("/:attendance/:teacherID", (req,res,next) => {
-    const id = req.params.teacherID;
-    const status = req.params.attendance;
-    const attendance = new Attendance({
-        _id:  new mongoose.Types.ObjectId(),
-        uniqueID: id,
-        status: status,
-        date: new Date()
-        
+ 
 
-    });
-    attendance.save();
-    res.status(201).json({
-        message: 'attendance entered',
-        added: attendance
-    });
-})
+  
+
+
+
+
+
+
+
 
 
 export default router;

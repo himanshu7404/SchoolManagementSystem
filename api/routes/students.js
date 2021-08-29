@@ -1,7 +1,6 @@
 import express from 'express';
 import multer from 'multer';
 import Student from '../../models/students.js';
-import Attendance from '../../models/attendance.js';
 import mongoose from 'mongoose';
 
 const storage = multer.diskStorage({
@@ -98,6 +97,8 @@ router.post('/',upload.single('studentImage'),(req,res,next) => {
     });
 });
 
+/*body needs to be paased as an array */
+
 router.patch("/:studentId", (req, res, next) => {
     const id = req.params.studentId;
     const updateOps = {};
@@ -145,25 +146,11 @@ router.patch("/:studentId", (req, res, next) => {
       });
   });
 
-/* Attendance Api */
 
-router.post("/:attendance/:studentID", (req,res,next) => {
-    const id = req.params.studentID;
-    const status = req.params.attendance;
-    const attendance = new Attendance({
-        _id:  new mongoose.Types.ObjectId(),
-        uniqueID: id,
-        status: status,
-        date: new Date()
-        
 
-    });
-    attendance.save();
-    res.status(201).json({
-        message: 'attendance entered',
-        added: attendance
-    });
-})
+
+
+/* Marks API */
 
 
 
